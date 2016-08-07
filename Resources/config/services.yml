@@ -1,0 +1,27 @@
+parameters:
+    currency_exchange.cache.cache_lifetime: 3
+
+services:
+    currency_exchange.cache.cache_adapter:
+        class: Symfony\Component\Cache\Adapter\FilesystemAdapter
+
+    currency_exchange.service.currency_exchange_service:
+        class: CurrencyExchangeBundle\Service\ExchangeRateService
+        arguments:
+            - '@currency_exchange.cache.cache_adapter'
+            - '%currency_exchange.cache.cache_lifetime%'
+
+    currency_exchange.service.exchange_rate_provider.swedbank:
+        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\SwedbankExchangeRateProvider
+        tags:
+            - { name: exchange.rate.provider }
+
+    currency_exchange.service.exchange_rate_provider.seb:
+        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\SebExchangeRateProvider
+        tags:
+            - { name: exchange.rate.provider }
+
+    currency_exchange.service.exchange_rate_provider.dnb:
+        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\DnbExchangeRateProvider
+        tags:
+            - { name: exchange.rate.provider }
