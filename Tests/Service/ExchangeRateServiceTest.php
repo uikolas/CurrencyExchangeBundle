@@ -3,7 +3,7 @@
 namespace CurrencyExchangeBundle\Tests\Service;
 
 use CurrencyExchangeBundle\Exception\NoCurrencyException;
-use CurrencyExchangeBundle\ExchangeRate\BestExchangeRate;
+use CurrencyExchangeBundle\ExchangeRate\ExchangeRate;
 use CurrencyExchangeBundle\Service\ExchangeRateService;
 use CurrencyExchangeBundle\Tests\Fixtures\ExchangeRateProvider\FirstExchangeProvider;
 use CurrencyExchangeBundle\Tests\Fixtures\ExchangeRateProvider\SecondExchangeProvider;
@@ -34,8 +34,8 @@ class ExchangeRateServiceTest extends \PHPUnit_Framework_TestCase
     {
         $bestRate = $this->exchangeRateService->bestExchangeRate('EUR', 'LTL');
 
-        $this->assertInstanceOf(BestExchangeRate::class, $bestRate);
-        $this->assertEquals(0.2, $bestRate->getBestRate());
+        $this->assertInstanceOf(ExchangeRate::class, $bestRate);
+        $this->assertEquals(0.2, $bestRate->getCurrencyPairRate());
     }
 
     public function testBestExchangeRateList()
@@ -43,7 +43,7 @@ class ExchangeRateServiceTest extends \PHPUnit_Framework_TestCase
         $currencyRates = $this->exchangeRateService->currencyRates('EUR', 'LTL');
 
         $this->assertCount(3, $currencyRates);
-        $this->assertContainsOnlyInstancesOf(BestExchangeRate::class, $currencyRates);
+        $this->assertContainsOnlyInstancesOf(ExchangeRate::class, $currencyRates);
     }
 
     public function testFromNoCurrencyException()

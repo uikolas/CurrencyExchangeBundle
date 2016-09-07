@@ -4,12 +4,12 @@ namespace CurrencyExchangeBundle\ExchangeRate;
 
 use CurrencyExchangeBundle\ExchangeRateProvider\ExchangeRateProviderInterface;
 
-class BestExchangeRate
+class ExchangeRate
 {
     /**
      * @var float
      */
-    private $bestRate;
+    private $currencyPairRate;
 
     /**
      * @var ExchangeRateProviderInterface $exchangeRateProvider
@@ -18,29 +18,29 @@ class BestExchangeRate
 
     /**
      * BestExchangeRate constructor.
-     * @param float $bestRate
+     * @param float $currencyPairRate
      * @param ExchangeRateProviderInterface $exchangeRateProvider
      */
-    public function __construct($bestRate, ExchangeRateProviderInterface $exchangeRateProvider)
+    public function __construct($currencyPairRate, ExchangeRateProviderInterface $exchangeRateProvider)
     {
-        $this->bestRate             = $bestRate;
+        $this->currencyPairRate     = $currencyPairRate;
         $this->exchangeRateProvider = $exchangeRateProvider;
     }
 
     /**
      * @return float
      */
-    public function getBestRate()
+    public function getCurrencyPairRate()
     {
-        return $this->bestRate;
+        return $this->currencyPairRate;
     }
 
     /**
-     * @param float $bestRate
+     * @param float $currencyPairRate
      */
-    public function setBestRate($bestRate)
+    public function setCurrencyPairRate($currencyPairRate)
     {
-        $this->bestRate = $bestRate;
+        $this->currencyPairRate = $currencyPairRate;
     }
 
     /**

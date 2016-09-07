@@ -23,7 +23,10 @@ class ExchangeRateProviderCompilerPass implements CompilerPassInterface
         $taggedServices = $container->findTaggedServiceIds('exchange.rate.provider');
 
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('setExchangeRateProvider', [new Reference($id)]);
+            $definition->addMethodCall(
+                'setExchangeRateProvider',
+                [new Reference($id)]
+            );
         }
     }
 }

@@ -29,7 +29,7 @@ class CurrencyBestRateCommand extends ContainerAwareCommand
 
         $bestCurrencyRate = $service->bestExchangeRate($currencyFrom, $currencyTo);
 
-        $bestRate = $bestCurrencyRate->getBestRate();
+        $bestRate = $bestCurrencyRate->getCurrencyPairRate();
         $provider = $bestCurrencyRate->getExchangeRateProvider()->getProviderName();
 
         $output->writeln('Best exchange: '. $bestRate .' provider: '. $provider);

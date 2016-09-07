@@ -3,7 +3,7 @@
 namespace CurrencyExchangeBundle\Service;
 
 use CurrencyExchangeBundle\Exception\NoCurrencyException;
-use CurrencyExchangeBundle\ExchangeRate\BestExchangeRate;
+use CurrencyExchangeBundle\ExchangeRate\ExchangeRate;
 use CurrencyExchangeBundle\ExchangeRateProvider\ExchangeRateProviderInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 
@@ -46,7 +46,7 @@ class ExchangeRateService
     /**
      * @param string $from
      * @param string $to
-     * @return BestExchangeRate
+     * @return ExchangeRate
      * @throws NoCurrencyException
      */
     public function bestExchangeRate($from, $to)
@@ -71,12 +71,12 @@ class ExchangeRateService
     /**
      * @param string $from
      * @param string $to
-     * @return BestExchangeRate[]
+     * @return ExchangeRate[]
      * @throws NoCurrencyException
      */
     public function currencyRates($from, $to)
     {
-        $exchangeBestRates = $this->getExchangeBestRates($from, $to);
+        $exchangeBestRates = $this->getCurrencyPairRates($from, $to);
 
         return $exchangeBestRates;
     }
@@ -84,12 +84,12 @@ class ExchangeRateService
     /**
      * @param string $from
      * @param string $to
-     * @return BestExchangeRate[]
+     * @return ExchangeRate[]
      * @throws NoCurrencyException
      */
-    private function getExchangeBestRates($from, $to)
+    private function getCurrencyPairRates($from, $to)
     {
-        $bestRates = [];
+        $rates = [];
 
         foreach ($this->exchangeRateProviders as $exchangeRateProvider) {
             $exchangeRates = $exchangeRateProvider->getExchangeRates();
@@ -104,25 +104,25 @@ class ExchangeRateService
 
             $rate = $exchangeRates[$from][$to];
 
-            $bestRates[] = new BestExchangeRate($rate, $exchangeRateProvider);
+            $rates[] = new ExchangeRate($rate, $exchangeRateProvider);
         }
 
-        return $bestRates;
+        return $rates;
     }
 
     /**
-     * @param $from
-     * @param $to
-     * @return BestExchangeRate
+     * @param string $from
+     * @param string $to
+     * @return ExchangeRate
      * @throws NoCurrencyException
      */
     private function getBestExchangeRate($from, $to)
     {
-        $exchangeBestRates = $this->getExchangeBestRates($from, $to);
-        $bestExchangeRate  = $exchangeBestRates[0];
+        $currencyPairRates = $this->getCurrencyPairRates($from, $to);
+        $bestExchangeRate  = $currencyPairRates[0];
 
-        foreach ($exchangeBestRates as $currencyRate) {
-            if ($currencyRate->getBestRate() < $bestExchangeRate->getBestRate()) {
+        foreach ($currencyPairRates as $currencyRate) {
+            if ($currencyRate->getCurrencyPairRate() < $bestExchangeRate->getCurrencyPairRate()) {
                 $bestExchangeRate = $currencyRate;
             }
         }

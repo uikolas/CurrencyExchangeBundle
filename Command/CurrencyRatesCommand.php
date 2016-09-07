@@ -38,7 +38,7 @@ class CurrencyRatesCommand extends ContainerAwareCommand
         foreach ($currencyRates as $currencyRate) {
             $table->addRow([
                 $currencyRate->getExchangeRateProvider()->getProviderName(),
-                $currencyRate->getBestRate()
+                $currencyRate->getCurrencyPairRate()
             ]);
         }
 
