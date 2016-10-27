@@ -3,10 +3,9 @@
 namespace CurrencyExchangeBundle\Tests\Fixtures\ExchangeRateProvider;
 
 use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
-use CurrencyExchangeBundle\Exception\NoCurrencyException;
 use CurrencyExchangeBundle\ExchangeRateProvider\ExchangeRateProviderInterface;
 
-class SecondExchangeProvider implements ExchangeRateProviderInterface
+class FourthExchangeProvider implements ExchangeRateProviderInterface
 {
     /**
      * @param CurrencyPair $currencyPair
@@ -14,7 +13,7 @@ class SecondExchangeProvider implements ExchangeRateProviderInterface
      */
     public function getExchangeRate(CurrencyPair $currencyPair)
     {
-        throw new NoCurrencyException($currencyPair->getFrom(), $this);
+        return 6;
     }
 
     /**
@@ -22,6 +21,6 @@ class SecondExchangeProvider implements ExchangeRateProviderInterface
      */
     public function getProviderName()
     {
-        return 'Second Provider';
+        return 'FourthExchangeProvider';
     }
 }

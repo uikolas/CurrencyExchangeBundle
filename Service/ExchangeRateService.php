@@ -2,9 +2,10 @@
 
 namespace CurrencyExchangeBundle\Service;
 
-use CurrencyExchangeBundle\Exception\NoCurrencyException;
+use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
 use CurrencyExchangeBundle\ExchangeRate\ExchangeRate;
 use CurrencyExchangeBundle\ExchangeRateProvider\ExchangeRateProviderInterface;
+use Psr\Cache\CacheItemInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 class ExchangeRateService
@@ -12,7 +13,7 @@ class ExchangeRateService
     /**
      * @var ExchangeRateProviderInterface[]
      */
-    private $exchangeRateProviders;
+    private $exchangeRateProviders = [];
 
     /**
      * @var AdapterInterface
@@ -44,23 +45,21 @@ class ExchangeRateService
     }
 
     /**
-     * @param string $from
-     * @param string $to
-     * @return ExchangeRate
-     * @throws NoCurrencyException
+     * @param CurrencyPair $currencyPair
+     * @return ExchangeRate|null
      */
-    public function bestExchangeRate($from, $to)
+    public function bestExchangeRate(CurrencyPair $currencyPair)
     {
         $cacheBestExchangeRate = $this->cache->getItem('best_exchange_rate');
 
         if (!$cacheBestExchangeRate->isHit()) {
-            $bestExchangeRate = $this->getBestExchangeRate($from, $to);
+            $currencyPairRates = $this->getCurrencyPairRates($currencyPair);
 
-            $cacheBestExchangeRate->set($bestExchangeRate);
-            $cacheLifetime = $this->cacheLifetime.' hour';
-            $cacheBestExchangeRate->expiresAfter(\DateInterval::createFromDateString($cacheLifetime));
+            $bestExchangeRate = array_reduce($currencyPairRates, function (ExchangeRate $a = null, ExchangeRate $b) {
+                return  $a && $a->getCurrencyPairRate() < $b->getCurrencyPairRate() ? $a : $b;
+            });
 
-            $this->cache->save($cacheBestExchangeRate);
+            $this->cacheExchangeRate($cacheBestExchangeRate, $bestExchangeRate);
         } else {
             $bestExchangeRate = $cacheBestExchangeRate->get();
         }
@@ -69,64 +68,49 @@ class ExchangeRateService
     }
 
     /**
-     * @param string $from
-     * @param string $to
+     * @param CurrencyPair $currencyPair
      * @return ExchangeRate[]
-     * @throws NoCurrencyException
      */
-    public function currencyRates($from, $to)
+    public function currencyRates(CurrencyPair $currencyPair)
     {
-        $exchangeBestRates = $this->getCurrencyPairRates($from, $to);
-
-        return $exchangeBestRates;
+        return $this->getCurrencyPairRates($currencyPair);
     }
 
     /**
-     * @param string $from
-     * @param string $to
+     * @param CurrencyPair $currencyPair
      * @return ExchangeRate[]
-     * @throws NoCurrencyException
      */
-    private function getCurrencyPairRates($from, $to)
+    private function getCurrencyPairRates(CurrencyPair $currencyPair)
     {
         $rates = [];
 
         foreach ($this->exchangeRateProviders as $exchangeRateProvider) {
-            $exchangeRates = $exchangeRateProvider->getExchangeRates();
+            try {
+                $rate = $exchangeRateProvider->getExchangeRate($currencyPair);
 
-            if (!isset($exchangeRates[$from])) {
-                throw new NoCurrencyException($from, $exchangeRateProvider);
+                $rates[] = new ExchangeRate($rate, $exchangeRateProvider);
+            } catch (\Exception $exception) {
+                //TODO: maybe log, that exchange provider don't have rate?
             }
-
-            if (!isset($exchangeRates[$from][$to])) {
-                throw new NoCurrencyException($to, $exchangeRateProvider);
-            }
-
-            $rate = $exchangeRates[$from][$to];
-
-            $rates[] = new ExchangeRate($rate, $exchangeRateProvider);
         }
 
         return $rates;
     }
 
     /**
-     * @param string $from
-     * @param string $to
-     * @return ExchangeRate
-     * @throws NoCurrencyException
+     * @param ExchangeRate $bestExchangeRate
+     * @param CacheItemInterface $cacheBestExchangeRate
      */
-    private function getBestExchangeRate($from, $to)
-    {
-        $currencyPairRates = $this->getCurrencyPairRates($from, $to);
-        $bestExchangeRate  = $currencyPairRates[0];
+    private function cacheExchangeRate(
+        CacheItemInterface $cacheBestExchangeRate,
+        ExchangeRate $bestExchangeRate = null
+    ) {
+        if ($bestExchangeRate) {
+            $cacheBestExchangeRate->set($bestExchangeRate);
+            $cacheLifetimeInHours = $this->cacheLifetime . ' hour';
+            $cacheBestExchangeRate->expiresAfter(\DateInterval::createFromDateString($cacheLifetimeInHours));
 
-        foreach ($currencyPairRates as $currencyRate) {
-            if ($currencyRate->getCurrencyPairRate() < $bestExchangeRate->getCurrencyPairRate()) {
-                $bestExchangeRate = $currencyRate;
-            }
+            $this->cache->save($cacheBestExchangeRate);
         }
-
-        return $bestExchangeRate;
     }
 }

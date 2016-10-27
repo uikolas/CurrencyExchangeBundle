@@ -2,25 +2,18 @@
 
 namespace CurrencyExchangeBundle\Tests\Fixtures\ExchangeRateProvider;
 
+use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
 use CurrencyExchangeBundle\ExchangeRateProvider\ExchangeRateProviderInterface;
 
 class ThirdExchangeProvider implements ExchangeRateProviderInterface
 {
     /**
-     * @return array
+     * @param CurrencyPair $currencyPair
+     * @return float
      */
-    public function getExchangeRates()
+    public function getExchangeRate(CurrencyPair $currencyPair)
     {
-        return [
-            'EUR' => [
-                'USD' => 1.1119,
-                'LTL' => 0.345
-            ],
-            'USD' => [
-                'EUR' => 0.001,
-                'LTL' => 0.345
-            ]
-        ];
+        return 1.2;
     }
 
     /**

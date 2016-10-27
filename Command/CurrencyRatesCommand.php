@@ -2,6 +2,7 @@
 
 namespace CurrencyExchangeBundle\Command;
 
+use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,12 +29,10 @@ class CurrencyRatesCommand extends ContainerAwareCommand
         $currencyFrom = $input->getArgument('currency_from');
         $currencyTo   = $input->getArgument('currency_to');
 
-        $currencyRates = $service->currencyRates($currencyFrom, $currencyTo);
+        $currencyRates = $service->currencyRates(new CurrencyPair($currencyFrom, $currencyTo));
 
         $table = new Table($output);
-
-        $table
-            ->setHeaders(['Provider', 'Exchange rate']);
+        $table->setHeaders(['Provider', 'Exchange rate']);
 
         foreach ($currencyRates as $currencyRate) {
             $table->addRow([
@@ -41,6 +40,8 @@ class CurrencyRatesCommand extends ContainerAwareCommand
                 $currencyRate->getCurrencyPairRate()
             ]);
         }
+
+        $output->writeln('Currency pair exchange rates:');
 
         $table->render();
     }

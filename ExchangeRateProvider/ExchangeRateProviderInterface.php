@@ -2,12 +2,15 @@
 
 namespace CurrencyExchangeBundle\ExchangeRateProvider;
 
+use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
+
 interface ExchangeRateProviderInterface
 {
     /**
-     * @return array
+     * @param CurrencyPair $currencyPair
+     * @return float
      */
-    public function getExchangeRates();
+    public function getExchangeRate(CurrencyPair $currencyPair);
 
     /**
      * @return string

@@ -2,6 +2,7 @@
 
 namespace CurrencyExchangeBundle\Command;
 
+use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,11 +28,15 @@ class CurrencyBestRateCommand extends ContainerAwareCommand
         $currencyFrom = $input->getArgument('currency_from');
         $currencyTo   = $input->getArgument('currency_to');
 
-        $bestCurrencyRate = $service->bestExchangeRate($currencyFrom, $currencyTo);
+        $bestCurrencyRate = $service->bestExchangeRate(new CurrencyPair($currencyFrom, $currencyTo));
 
-        $bestRate = $bestCurrencyRate->getCurrencyPairRate();
-        $provider = $bestCurrencyRate->getExchangeRateProvider()->getProviderName();
+        if ($bestCurrencyRate) {
+            $bestRate = $bestCurrencyRate->getCurrencyPairRate();
+            $provider = $bestCurrencyRate->getExchangeRateProvider()->getProviderName();
 
-        $output->writeln('Best exchange: '. $bestRate .' provider: '. $provider);
+            $output->writeln('Best exchange: '. $bestRate .' provider: '. $provider);
+        } else {
+            $output->writeln('No best provider found for given currency pair');
+        }
     }
 }

@@ -11,17 +11,12 @@ services:
             - '@currency_exchange.cache.cache_adapter'
             - '%currency_exchange.cache.cache_lifetime%'
 
-    currency_exchange.service.exchange_rate_provider.swedbank:
-        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\SwedbankExchangeRateProvider
+    currency_exchange.service.exchange_rate_provider.fixer:
+        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\FixerExchangeRateProvider
         tags:
             - { name: exchange.rate.provider }
 
-    currency_exchange.service.exchange_rate_provider.seb:
-        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\SebExchangeRateProvider
+    currency_exchange.service.exchange_rate_provider.google:
+        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\GoogleExchangeRateProvider
         tags:
-            - { name: exchange.rate.provider }
-
-    currency_exchange.service.exchange_rate_provider.dnb:
-        class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\DnbExchangeRateProvider
-        tags:
-            - { name: exchange.rate.provider }
+              - { name: exchange.rate.provider }
