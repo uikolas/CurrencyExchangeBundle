@@ -5,6 +5,7 @@ namespace CurrencyExchangeBundle\Tests\ExchangeRateProvider\Provider;
 use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
 use CurrencyExchangeBundle\Exception\NoCurrencyException;
 use CurrencyExchangeBundle\ExchangeRateProvider\Provider\FixerExchangeRateProvider;
+use Goutte\Client;
 
 class FixerExchangeRateProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +18,9 @@ class FixerExchangeRateProviderTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->exchangeProvider = new FixerExchangeRateProvider();
+        $client = new Client();
+
+        $this->exchangeProvider = new FixerExchangeRateProvider($client);
     }
 
     public function testGetExchangeRate()
@@ -31,6 +34,6 @@ class FixerExchangeRateProviderTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(NoCurrencyException::class);
 
-        $result = $this->exchangeProvider->getExchangeRate(new CurrencyPair('AAA', 'EUR'));
+        $this->exchangeProvider->getExchangeRate(new CurrencyPair('AAA', 'EUR'));
     }
 }

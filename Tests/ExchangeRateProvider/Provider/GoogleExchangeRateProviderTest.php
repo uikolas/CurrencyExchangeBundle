@@ -5,6 +5,7 @@ namespace CurrencyExchangeBundle\Tests\ExchangeRateProvider\Provider;
 use CurrencyExchangeBundle\CurrencyPair\CurrencyPair;
 use CurrencyExchangeBundle\Exception\NoCurrencyException;
 use CurrencyExchangeBundle\ExchangeRateProvider\Provider\GoogleExchangeRateProvider;
+use Goutte\Client;
 
 class GoogleExchangeRateProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,7 +18,9 @@ class GoogleExchangeRateProviderTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->exchangeProvider = new GoogleExchangeRateProvider();
+        $client = new Client();
+
+        $this->exchangeProvider = new GoogleExchangeRateProvider($client);
     }
 
     public function testGetExchangeRate()

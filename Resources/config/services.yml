@@ -5,6 +5,9 @@ services:
     currency_exchange.cache.cache_adapter:
         class: Symfony\Component\Cache\Adapter\FilesystemAdapter
 
+    currency_exchange.client:
+        class: Goutte\Client
+
     currency_exchange.service.currency_exchange_service:
         class: CurrencyExchangeBundle\Service\ExchangeRateService
         arguments:
@@ -13,10 +16,12 @@ services:
 
     currency_exchange.service.exchange_rate_provider.fixer:
         class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\FixerExchangeRateProvider
+        arguments: ['@currency_exchange.client']
         tags:
             - { name: exchange.rate.provider }
 
     currency_exchange.service.exchange_rate_provider.google:
         class: CurrencyExchangeBundle\ExchangeRateProvider\Provider\GoogleExchangeRateProvider
+        arguments: ['@currency_exchange.client']
         tags:
               - { name: exchange.rate.provider }

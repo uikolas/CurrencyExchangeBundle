@@ -10,6 +10,20 @@ use Goutte\Client;
 class FixerExchangeRateProvider implements ExchangeRateProviderInterface
 {
     /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * FixerExchangeRateProvider constructor.
+     * @param Client $client
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    /**
      * @param CurrencyPair $currencyPair
      * @return float
      * @throws NoCurrencyException
@@ -18,10 +32,9 @@ class FixerExchangeRateProvider implements ExchangeRateProviderInterface
     {
         $currencyFrom = $currencyPair->getFrom();
 
-        $client = new Client();
-        $client->request('GET', 'http://api.fixer.io/latest?base='.$currencyFrom);
+        $this->client->request('GET', 'http://api.fixer.io/latest?base='.$currencyFrom);
 
-        $content = $client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
 
         $array = json_decode($content, true);
 

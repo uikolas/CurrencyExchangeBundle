@@ -10,6 +10,20 @@ use Goutte\Client;
 class GoogleExchangeRateProvider implements ExchangeRateProviderInterface
 {
     /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * GoogleExchangeRateProvider constructor.
+     * @param Client $client
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    /**
      * @param CurrencyPair $currencyPair
      * @return float
      * @throws NoCurrencyException
@@ -19,8 +33,7 @@ class GoogleExchangeRateProvider implements ExchangeRateProviderInterface
         $currencyFrom = $currencyPair->getFrom();
         $currencyTo   = $currencyPair->getTo();
 
-        $client = new Client();
-        $crawler = $client->request('GET', 'https://www.google.com/finance/converter?a=1&from='.$currencyFrom.'&to='.$currencyTo);
+        $crawler = $this->client->request('GET', 'https://www.google.com/finance/converter?a=1&from='.$currencyFrom.'&to='.$currencyTo);
 
         if (!$crawler->filter('#currency_converter_result .bld')->count()) {
             throw new NoCurrencyException($currencyFrom, $this);
