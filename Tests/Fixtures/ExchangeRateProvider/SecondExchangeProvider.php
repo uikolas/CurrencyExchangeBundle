@@ -11,6 +11,7 @@ class SecondExchangeProvider implements ExchangeRateProviderInterface
     /**
      * @param CurrencyPair $currencyPair
      * @return float
+     * @throws NoCurrencyException
      */
     public function getExchangeRate(CurrencyPair $currencyPair)
     {

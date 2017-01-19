@@ -46,4 +46,28 @@ class ExchangeRateServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(3, $currencyRates);
         $this->assertContainsOnlyInstancesOf(ExchangeRate::class, $currencyRates);
     }
+
+    public function testNullExchangeRate()
+    {
+        $cache = new ArrayAdapter();
+
+        $exchangeRateService = new ExchangeRateService($cache, 1);
+        $exchangeRateService->setExchangeRateProvider(new SecondExchangeProvider());
+
+        $nullRate = $exchangeRateService->bestExchangeRate(new CurrencyPair('A', 'B'));
+
+        $this->assertNull($nullRate);
+    }
+
+    public function testEmptyExchangeRateList()
+    {
+        $cache = new ArrayAdapter();
+
+        $exchangeRateService = new ExchangeRateService($cache, 1);
+        $exchangeRateService->setExchangeRateProvider(new SecondExchangeProvider());
+
+        $emptyCurrencyRates = $exchangeRateService->currencyRates(new CurrencyPair('A', 'B'));
+
+        $this->assertEmpty($emptyCurrencyRates);
+    }
 }
