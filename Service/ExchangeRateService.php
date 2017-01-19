@@ -55,11 +55,11 @@ class ExchangeRateService
         if (!$cacheBestExchangeRate->isHit()) {
             $currencyPairRates = $this->getCurrencyPairRates($currencyPair);
 
-            $bestExchangeRate = array_reduce($currencyPairRates, function (ExchangeRate $a = null, ExchangeRate $b) {
-                return  $a && $a->getCurrencyPairRate() < $b->getCurrencyPairRate() ? $a : $b;
-            });
+            $bestExchangeRate = $this->findBestExchangeRate($currencyPairRates);
 
-            $this->cacheExchangeRate($cacheBestExchangeRate, $bestExchangeRate);
+            if ($bestExchangeRate) {
+                $this->cacheExchangeRate($cacheBestExchangeRate, $bestExchangeRate);
+            }
         } else {
             $bestExchangeRate = $cacheBestExchangeRate->get();
         }
@@ -103,14 +103,23 @@ class ExchangeRateService
      */
     private function cacheExchangeRate(
         CacheItemInterface $cacheBestExchangeRate,
-        ExchangeRate $bestExchangeRate = null
+        ExchangeRate $bestExchangeRate
     ) {
-        if ($bestExchangeRate) {
-            $cacheBestExchangeRate->set($bestExchangeRate);
-            $cacheLifetimeInHours = $this->cacheLifetime . ' hour';
-            $cacheBestExchangeRate->expiresAfter(\DateInterval::createFromDateString($cacheLifetimeInHours));
+        $cacheBestExchangeRate->set($bestExchangeRate);
+        $cacheLifetimeInHours = $this->cacheLifetime . ' hour';
+        $cacheBestExchangeRate->expiresAfter(\DateInterval::createFromDateString($cacheLifetimeInHours));
 
-            $this->cache->save($cacheBestExchangeRate);
-        }
+        $this->cache->save($cacheBestExchangeRate);
+    }
+
+    /**
+     * @param array $currencyPairRates
+     * @return ExchangeRate
+     */
+    private function findBestExchangeRate($currencyPairRates)
+    {
+        return array_reduce($currencyPairRates, function (ExchangeRate $a = null, ExchangeRate $b) {
+            return  $a && $a->getCurrencyPairRate() < $b->getCurrencyPairRate() ? $a : $b;
+        });
     }
 }

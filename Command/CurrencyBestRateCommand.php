@@ -28,7 +28,7 @@ class CurrencyBestRateCommand extends ContainerAwareCommand
         $currencyFrom = $input->getArgument('currency_from');
         $currencyTo   = $input->getArgument('currency_to');
 
-        $bestCurrencyRate = $service->bestExchangeRate(new CurrencyPair($currencyFrom, $currencyTo));
+        $bestCurrencyRate = $service->bestExchangeRate(CurrencyPair::create($currencyFrom, $currencyTo));
 
         if ($bestCurrencyRate) {
             $bestRate = $bestCurrencyRate->getCurrencyPairRate();
