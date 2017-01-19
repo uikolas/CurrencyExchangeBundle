@@ -66,7 +66,7 @@ class ExchangeRateServiceTest extends \PHPUnit_Framework_TestCase
         $exchangeRateService = new ExchangeRateService($cache, 1);
         $exchangeRateService->setExchangeRateProvider(new SecondExchangeProvider());
 
-        $emptyCurrencyRates = $exchangeRateService->currencyRates(new CurrencyPair('A', 'B'));
+        $emptyCurrencyRates = $exchangeRateService->currencyRates(CurrencyPair::create('A', 'B'));
 
         $this->assertEmpty($emptyCurrencyRates);
     }

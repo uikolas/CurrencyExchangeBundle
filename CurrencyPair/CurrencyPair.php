@@ -26,6 +26,16 @@ class CurrencyPair
     }
 
     /**
+     * @param string $from
+     * @param string $to
+     * @return CurrencyPair
+     */
+    public static function create($from, $to)
+    {
+        return new self($from, $to);
+    }
+
+    /**
      * @return string
      */
     public function getFrom()
@@ -34,26 +44,10 @@ class CurrencyPair
     }
 
     /**
-     * @param string $from
-     */
-    public function setFrom($from)
-    {
-        $this->from = strtoupper($from);
-    }
-
-    /**
      * @return string
      */
     public function getTo()
     {
         return $this->to;
-    }
-
-    /**
-     * @param string $to
-     */
-    public function setTo($to)
-    {
-        $this->to = strtoupper($to);
     }
 }
